@@ -117,20 +117,9 @@ def run(stdscr, target, time_limit=None, size=1):
         except curses.error:  # off-screen write, e.g. the bottom-right cell
             pass
 
-    def banana(x=2):
+    def banana(y, x):
         for i, line in enumerate(BANANA):
-            put(i, x, line, C_BAN)
-
-    # splash: draw the banana and wait for a key before the test starts
-    stdscr.erase()
-    banana()
-    h, w = stdscr.getmaxyx()
-    put(h - 1, 4, "banana  -  any key to start,  Esc to quit", C_DIM)
-    stdscr.refresh()
-    stdscr.timeout(-1)
-    if stdscr.getch() == 27:
-        return "quit"
-    stdscr.timeout(100)
+            put(y + i, x, line, C_BAN)
 
     typed = []      # what the player has typed so far
     start = None    # perf_counter() at the first keystroke
@@ -203,13 +192,15 @@ def run(stdscr, target, time_limit=None, size=1):
     wpm = correct / 5 / (elapsed / 60) if elapsed else 0.0
     raw = keystrokes / 5 / (elapsed / 60) if elapsed else 0.0
     acc = hits / keystrokes * 100 if keystrokes else 100.0
+    h, w = stdscr.getmaxyx()
     stdscr.erase()
-    put(2, 4, "done!", curses.A_BOLD)
-    put(4, 4, f"wpm       {wpm:6.1f}")
-    put(5, 4, f"raw wpm   {raw:6.1f}")
-    put(6, 4, f"accuracy  {acc:6.1f}%")
-    put(7, 4, f"time      {elapsed:6.1f}s")
-    put(9, 4, "Tab restart   Esc quit", C_DIM)
+    put(0, 4, "done!", curses.A_BOLD)
+    put(2, 4, f"wpm       {wpm:6.1f}")
+    put(3, 4, f"raw wpm   {raw:6.1f}")
+    put(4, 4, f"accuracy  {acc:6.1f}%")
+    put(5, 4, f"time      {elapsed:6.1f}s")
+    banana(7, 4)
+    put(h - 1, 4, "Tab restart   Esc quit", C_DIM)
     stdscr.refresh()
     while True:
         ch = stdscr.getch()
