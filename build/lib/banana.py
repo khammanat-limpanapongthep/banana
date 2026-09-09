@@ -35,49 +35,6 @@ possible head consider word program problem however lead system set order eye
 plan run keep face fact group play stand increase early course change help line
 """.split()
 
-BANANA = [ln.rstrip() for ln in """
-      -#####*
-    :##*...-###
-   :##.......-##
-   ##:.........##
-  :##...........##
-  +#+...........+##
-  *#=............##-
-  ##-.............##
-  ##-.............##*
-  *#=..............##
-  =#+..............=##
-  :#*...............##-
-  .##................##.
-   ##:...............=##
-   *#+................*#* -########+:
-   :##.................####*:.....=#####
-    ##:...............##*.............:###+
-    =#*..............##-.................=##*
-     ##.............##-....................=##+
-     +#*...........:##.......................###
-      ##:..........*#+....-+*#####*=-.........*##
-      .##############+##########-=*#####*.....=##
-     #####=:..:-+######=------+##=     -########
-   =###:........####=##+--------*##:       .-:
-  +##+.........###-...##*---------###-
- =##=.........###......*##----------*##*
-.##*.........###........=##+----------+###+
-=##:.........###..........###=-----------+####
-###..........###...........:###=------------+####+:
-##*..........####:...........:###=--------------+#####+
-###..........######.............###*-----------------*#####*=
-+##..........:##==##+.............+###+-------------------+*####:
-.##+..........###  *##=..............*####=--------------------###
- *##:.........:##+   *##*...............-#####*-----------------+##
-  ###..........###     =###-................-+#######*+=======++###
-   ###:.........##*       ####-....................-*#############-
-    ###*........###         .####+:...........................-##=
-     :####......=##.            =####*-:...................:*###
-       .#####*=*###                 :#########*++=++*########-
-          :######+                        .-=*######*+=:.
-""".strip("\n").split("\n")]
-
 
 def make_text(n, rng):
     return " ".join(rng.choice(WORDS) for _ in range(n))
@@ -107,30 +64,13 @@ def run(stdscr, target, time_limit=None, size=1):
     lead = size - 1  # blank rows between text lines
     curses.init_pair(1, curses.COLOR_GREEN, -1)  # correct
     curses.init_pair(2, curses.COLOR_RED, -1)  # wrong
-    curses.init_pair(3, curses.COLOR_YELLOW, -1)  # the banana
     C_OK, C_BAD, C_DIM = curses.color_pair(1), curses.color_pair(2), curses.A_DIM
-    C_BAN = curses.color_pair(3) | curses.A_BOLD
 
     def put(y, x, s, attr=0):
         try:
             stdscr.addstr(y, x, s, attr)
         except curses.error:  # off-screen write, e.g. the bottom-right cell
             pass
-
-    def banana(x=2):
-        for i, line in enumerate(BANANA):
-            put(i, x, line, C_BAN)
-
-    # splash: draw the banana and wait for a key before the test starts
-    stdscr.erase()
-    banana()
-    h, w = stdscr.getmaxyx()
-    put(h - 1, 4, "banana  -  any key to start,  Esc to quit", C_DIM)
-    stdscr.refresh()
-    stdscr.timeout(-1)
-    if stdscr.getch() == 27:
-        return "quit"
-    stdscr.timeout(100)
 
     typed = []      # what the player has typed so far
     start = None    # perf_counter() at the first keystroke
@@ -143,7 +83,7 @@ def run(stdscr, target, time_limit=None, size=1):
         pos, nrows = layout(target, max(10, w - 2 * mx))
 
         stdscr.erase()
-        put(0, mx, "banana", C_BAN)
+        put(0, mx, "banana", curses.A_BOLD)
 
         for i, ch in enumerate(target):
             r, c = pos[i]
