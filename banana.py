@@ -35,12 +35,48 @@ possible head consider word program problem however lead system set order eye
 plan run keep face fact group play stand increase early course change help line
 """.split()
 
-BANANA = r"""
-   __
-  (  \___
-   \      \
-    \______/
-""".strip("\n").split("\n")
+BANANA = [ln.rstrip() for ln in """
+      -#####*
+    :##*...-###
+   :##.......-##
+   ##:.........##
+  :##...........##
+  +#+...........+##
+  *#=............##-
+  ##-.............##
+  ##-.............##*
+  *#=..............##
+  =#+..............=##
+  :#*...............##-
+  .##................##.
+   ##:...............=##
+   *#+................*#* -########+:
+   :##.................####*:.....=#####
+    ##:...............##*.............:###+
+    =#*..............##-.................=##*
+     ##.............##-....................=##+
+     +#*...........:##.......................###
+      ##:..........*#+....-+*#####*=-.........*##
+      .##############+##########-=*#####*.....=##
+     #####=:..:-+######=------+##=     -########
+   =###:........####=##+--------*##:       .-:
+  +##+.........###-...##*---------###-
+ =##=.........###......*##----------*##*
+.##*.........###........=##+----------+###+
+=##:.........###..........###=-----------+####
+###..........###...........:###=------------+####+:
+##*..........####:...........:###=--------------+#####+
+###..........######.............###*-----------------*#####*=
++##..........:##==##+.............+###+-------------------+*####:
+.##+..........###  *##=..............*####=--------------------###
+ *##:.........:##+   *##*...............-#####*-----------------+##
+  ###..........###     =###-................-+#######*+=======++###
+   ###:.........##*       ####-....................-*#############-
+    ###*........###         .####+:...........................-##=
+     :####......=##.            =####*-:...................:*###
+       .#####*=*###                 :#########*++=++*########-
+          :######+                        .-=*######*+=:.
+""".strip("\n").split("\n")]
 
 
 def make_text(n, rng):
@@ -81,9 +117,20 @@ def run(stdscr, target, time_limit=None, size=1):
         except curses.error:  # off-screen write, e.g. the bottom-right cell
             pass
 
-    def banana(x=4):
+    def banana(x=2):
         for i, line in enumerate(BANANA):
             put(i, x, line, C_BAN)
+
+    # splash: draw the banana and wait for a key before the test starts
+    stdscr.erase()
+    banana()
+    h, w = stdscr.getmaxyx()
+    put(h - 1, 4, "banana  -  any key to start,  Esc to quit", C_DIM)
+    stdscr.refresh()
+    stdscr.timeout(-1)
+    if stdscr.getch() == 27:
+        return "quit"
+    stdscr.timeout(100)
 
     typed = []      # what the player has typed so far
     start = None    # perf_counter() at the first keystroke
@@ -92,12 +139,11 @@ def run(stdscr, target, time_limit=None, size=1):
 
     while True:
         h, w = stdscr.getmaxyx()
-        mx, my = 4, len(BANANA) + 2
+        mx, my = 4, 2
         pos, nrows = layout(target, max(10, w - 2 * mx))
 
         stdscr.erase()
-        banana(mx)
-        put(len(BANANA) - 1, mx + 14, "banana", curses.A_BOLD)
+        put(0, mx, "banana", C_BAN)
 
         for i, ch in enumerate(target):
             r, c = pos[i]
@@ -158,14 +204,12 @@ def run(stdscr, target, time_limit=None, size=1):
     raw = keystrokes / 5 / (elapsed / 60) if elapsed else 0.0
     acc = hits / keystrokes * 100 if keystrokes else 100.0
     stdscr.erase()
-    banana()
-    top = len(BANANA) + 1
-    put(top, 4, "done!", curses.A_BOLD)
-    put(top + 2, 4, f"wpm       {wpm:6.1f}")
-    put(top + 3, 4, f"raw wpm   {raw:6.1f}")
-    put(top + 4, 4, f"accuracy  {acc:6.1f}%")
-    put(top + 5, 4, f"time      {elapsed:6.1f}s")
-    put(top + 7, 4, "Tab restart   Esc quit", C_DIM)
+    put(2, 4, "done!", curses.A_BOLD)
+    put(4, 4, f"wpm       {wpm:6.1f}")
+    put(5, 4, f"raw wpm   {raw:6.1f}")
+    put(6, 4, f"accuracy  {acc:6.1f}%")
+    put(7, 4, f"time      {elapsed:6.1f}s")
+    put(9, 4, "Tab restart   Esc quit", C_DIM)
     stdscr.refresh()
     while True:
         ch = stdscr.getch()
