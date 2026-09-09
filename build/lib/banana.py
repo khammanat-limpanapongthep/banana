@@ -35,13 +35,6 @@ possible head consider word program problem however lead system set order eye
 plan run keep face fact group play stand increase early course change help line
 """.split()
 
-BANANA = r"""
-   __
-  (  \___
-   \      \
-    \______/
-""".strip("\n").split("\n")
-
 
 def make_text(n, rng):
     return " ".join(rng.choice(WORDS) for _ in range(n))
@@ -71,19 +64,13 @@ def run(stdscr, target, time_limit=None, size=1):
     lead = size - 1  # blank rows between text lines
     curses.init_pair(1, curses.COLOR_GREEN, -1)  # correct
     curses.init_pair(2, curses.COLOR_RED, -1)  # wrong
-    curses.init_pair(3, curses.COLOR_YELLOW, -1)  # the banana
     C_OK, C_BAD, C_DIM = curses.color_pair(1), curses.color_pair(2), curses.A_DIM
-    C_BAN = curses.color_pair(3) | curses.A_BOLD
 
     def put(y, x, s, attr=0):
         try:
             stdscr.addstr(y, x, s, attr)
         except curses.error:  # off-screen write, e.g. the bottom-right cell
             pass
-
-    def banana(x=4):
-        for i, line in enumerate(BANANA):
-            put(i, x, line, C_BAN)
 
     typed = []      # what the player has typed so far
     start = None    # perf_counter() at the first keystroke
@@ -92,12 +79,11 @@ def run(stdscr, target, time_limit=None, size=1):
 
     while True:
         h, w = stdscr.getmaxyx()
-        mx, my = 4, len(BANANA) + 2
+        mx, my = 4, 2
         pos, nrows = layout(target, max(10, w - 2 * mx))
 
         stdscr.erase()
-        banana(mx)
-        put(len(BANANA) - 1, mx + 14, "banana", curses.A_BOLD)
+        put(0, mx, "banana", curses.A_BOLD)
 
         for i, ch in enumerate(target):
             r, c = pos[i]
@@ -158,14 +144,12 @@ def run(stdscr, target, time_limit=None, size=1):
     raw = keystrokes / 5 / (elapsed / 60) if elapsed else 0.0
     acc = hits / keystrokes * 100 if keystrokes else 100.0
     stdscr.erase()
-    banana()
-    top = len(BANANA) + 1
-    put(top, 4, "done!", curses.A_BOLD)
-    put(top + 2, 4, f"wpm       {wpm:6.1f}")
-    put(top + 3, 4, f"raw wpm   {raw:6.1f}")
-    put(top + 4, 4, f"accuracy  {acc:6.1f}%")
-    put(top + 5, 4, f"time      {elapsed:6.1f}s")
-    put(top + 7, 4, "Tab restart   Esc quit", C_DIM)
+    put(2, 4, "done!", curses.A_BOLD)
+    put(4, 4, f"wpm       {wpm:6.1f}")
+    put(5, 4, f"raw wpm   {raw:6.1f}")
+    put(6, 4, f"accuracy  {acc:6.1f}%")
+    put(7, 4, f"time      {elapsed:6.1f}s")
+    put(9, 4, "Tab restart   Esc quit", C_DIM)
     stdscr.refresh()
     while True:
         ch = stdscr.getch()

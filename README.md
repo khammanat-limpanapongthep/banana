@@ -17,8 +17,9 @@ python3 banana.py -s 2       # more space between lines (1-4)
 python3 banana.py --seed 7   # same words every run, handy for racing a friend
 ```
 
-Correct letters go green, mistakes go red. `Tab` reshuffles the words if you
-don't like the ones you got, `Backspace` fixes the last character, `Esc` bails.
+Correct letters go green, mistakes go red, and there's a small yellow banana in
+the corner. `Tab` reshuffles the words if you don't like the ones you got,
+`Backspace` fixes the last character, `Esc` bails.
 
 When the timer runs out (or you finish the words) you get net WPM, raw WPM,
 accuracy, and how long it took.
