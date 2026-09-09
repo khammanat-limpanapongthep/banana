@@ -1,8 +1,0 @@
-README.md
-banana.py
-pyproject.toml
-banana.egg-info/PKG-INFO
-banana.egg-info/SOURCES.txt
-banana.egg-info/dependency_links.txt
-banana.egg-info/entry_points.txt
-banana.egg-info/top_level.txt
