@@ -4,17 +4,25 @@ I spend way too much time on typing-test sites, so I wrote a small one that
 lives in my terminal. No browser, no login, no leaderboard begging for your
 email. Just words on a screen and a WPM number at the end.
 
-It's a single Python file and only uses the standard library, so there's
-nothing to install.
+It's a single Python file and only uses the standard library.
+
+## Install
+
+```
+pipx install .        # or: pip install --user .
+```
+
+That puts a `banana` command on your PATH. Prefer not to install? Just run
+`python3 banana.py` from the repo instead.
 
 ## Play
 
 ```
-python3 banana.py            # 30-second test
-python3 banana.py -t 60      # timed, 60 seconds
-python3 banana.py -n 50      # 50 words, no clock
-python3 banana.py -s 2       # more space between lines (1-4)
-python3 banana.py --seed 7   # same words every run, handy for racing a friend
+banana            # 30-second test
+banana -t 60      # timed, 60 seconds
+banana -n 50      # 50 words, no clock
+banana -s 2       # more space between lines (1-4)
+banana --seed 7   # same words every run, handy for racing a friend
 ```
 
 Correct letters go green, mistakes go red. `Tab` reshuffles the words if you

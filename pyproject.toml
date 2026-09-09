@@ -1,0 +1,16 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "banana"
+version = "1.0.0"
+description = "A typing test for the terminal"
+readme = "README.md"
+requires-python = ">=3.8"
+
+[project.scripts]
+banana = "banana:main"
+
+[tool.setuptools]
+py-modules = ["banana"]
