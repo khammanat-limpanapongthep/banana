@@ -15,8 +15,14 @@ import curses
 import os
 import random
 import time
+from importlib.metadata import PackageNotFoundError, version
 
 os.environ.setdefault("ESCDELAY", "25")  # don't stall a second after a lone Esc
+
+try:
+    __version__ = version("banana")
+except PackageNotFoundError:  # running from a checkout, not installed
+    __version__ = "dev"
 
 # The 100 most common English words.
 WORDS = """
@@ -139,6 +145,7 @@ def run(stdscr, target, time_limit=None, size=1):
 
         stdscr.erase()
         put(0, mx, "banana", C_BAN)
+        put(0, mx + 7, f"v{__version__}", C_DIM)
 
         for i, ch in enumerate(target):
             r, c = pos[i]
@@ -226,6 +233,7 @@ def main():
     ap.add_argument("-s", "--size", type=int, choices=range(1, 5), default=1,
                     metavar="1-4", help="line spacing: blank rows between lines (default 1)")
     ap.add_argument("--seed", type=int, help="seed the random word list")
+    ap.add_argument("--version", action="version", version=f"banana {__version__}")
     args = ap.parse_args()
     rng = random.Random(args.seed)
 
