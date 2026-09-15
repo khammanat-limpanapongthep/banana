@@ -80,7 +80,13 @@ BANANA = [ln.rstrip() for ln in """
 
 
 def make_text(n, rng):
-    return " ".join(rng.choice(WORDS) for _ in range(n))
+    words = []
+    for _ in range(n):
+        word = rng.choice(WORDS)
+        while words and word == words[-1]:
+            word = rng.choice(WORDS)
+        words.append(word)
+    return " ".join(words)
 
 
 def layout(target, width):
