@@ -113,9 +113,9 @@ def layout(target, width):
     return pos, row + 1
 
 
-def menu(stdscr, mode, time_val, word_val, size):
-    """Let the player pick mode/duration/size with arrow keys. Returns the
-    chosen (mode, time_val, word_val, size); None if they backed out with
+def menu(stdscr, mode, time_val, word_val, space):
+    """Let the player pick mode/duration/space with arrow keys. Returns the
+    chosen (mode, time_val, word_val, space); None if they backed out with
     Esc; or "quit" if they quit the program with Q."""
     curses.use_default_colors()
     curses.curs_set(0)
@@ -137,7 +137,7 @@ def menu(stdscr, mode, time_val, word_val, size):
         rows = [
             f"mode      <  {'timed' if mode == 'time' else 'words':^7} >",
             f"{'seconds' if mode == 'time' else 'words  '}   <  {(time_val if mode == 'time' else word_val):^7} >",
-            f"size      <  {size:^7} >",
+            f"space     <  {space:^7} >",
         ]
         for i, row in enumerate(rows):
             put(my + i * 2, mx, row, C_SEL if i == sel else 0)
@@ -151,7 +151,7 @@ def menu(stdscr, mode, time_val, word_val, size):
         if ch in (ord("q"), ord("Q")):
             return "quit"
         if ch in (10, 13, curses.KEY_ENTER):
-            return mode, time_val, word_val, size
+            return mode, time_val, word_val, space
         if ch == curses.KEY_UP:
             sel = (sel - 1) % len(rows)
         elif ch == curses.KEY_DOWN:
@@ -165,14 +165,14 @@ def menu(stdscr, mode, time_val, word_val, size):
             elif sel == 1:
                 word_val = max(10, min(500, word_val + d * 10))
             elif sel == 2:
-                size = max(1, min(4, size + d))
+                space = max(1, min(4, space + d))
 
 
-def run(stdscr, target, time_limit=None, size=1, mode="time", time_val=30, word_val=50):
+def run(stdscr, target, time_limit=None, space=1, mode="time", time_val=30, word_val=50):
     curses.use_default_colors()
     curses.curs_set(0)
     stdscr.timeout(100)  # ms; redraw on a timer even when no key is pressed
-    lead = size - 1  # blank rows between text lines
+    lead = space - 1  # blank rows between text lines
     curses.init_pair(1, curses.COLOR_GREEN, -1)  # correct
     curses.init_pair(2, curses.COLOR_RED, -1)  # wrong
     curses.init_pair(3, curses.COLOR_YELLOW, -1)  # the banana
@@ -236,7 +236,7 @@ def run(stdscr, target, time_limit=None, size=1, mode="time", time_val=30, word_
         if ch == -1:  # timer tick, no key
             continue
         if ch == 27:  # Esc: open settings, then restart (no pausing mid-race)
-            picked = menu(stdscr, mode, time_val, word_val, size)
+            picked = menu(stdscr, mode, time_val, word_val, space)
             stdscr.timeout(100)  # menu() blocks on input; restore the redraw timer
             if picked == "quit":
                 return "quit"
@@ -286,7 +286,7 @@ def run(stdscr, target, time_limit=None, size=1, mode="time", time_val=30, word_
         if ch == 9:  # Tab
             return "restart"
         if ch in (27, ord("m"), ord("M")):  # Esc / M: same menu as mid-race
-            picked = menu(stdscr, mode, time_val, word_val, size)
+            picked = menu(stdscr, mode, time_val, word_val, space)
             if picked == "quit":
                 return "quit"
             if picked is None:  # backed out, show these results again
@@ -302,7 +302,7 @@ def main():
                     help="time mode: type for SECONDS (this is the default, 30s)")
     ap.add_argument("-n", "--num", type=int, metavar="WORDS",
                     help="word mode: fixed number of words, no clock")
-    ap.add_argument("-s", "--size", type=int, choices=range(1, 5), default=1,
+    ap.add_argument("-s", "--space", type=int, choices=range(1, 5), default=1,
                     metavar="1-4", help="line spacing: blank rows between lines (default 1)")
     ap.add_argument("--seed", type=int, help="seed the random word list")
     ap.add_argument("--version", action="version", version=f"banana {__version__}")
@@ -315,7 +315,7 @@ def main():
         mode, time_val, word_val = "words", 30, max(1, args.num)
     else:  # no flags: 30-second test
         mode, time_val, word_val = "time", 30, 50
-    size = args.size
+    space = args.space
 
     while True:
         if mode == "time":
@@ -325,9 +325,9 @@ def main():
             time_limit, word_count = None, word_val
 
         text = make_text(word_count, rng)
-        outcome = curses.wrapper(run, text, time_limit, size, mode, time_val, word_val)
-        if isinstance(outcome, tuple):  # ("apply", mode, time_val, word_val, size)
-            _, mode, time_val, word_val, size = outcome
+        outcome = curses.wrapper(run, text, time_limit, space, mode, time_val, word_val)
+        if isinstance(outcome, tuple):  # ("apply", mode, time_val, word_val, space)
+            _, mode, time_val, word_val, space = outcome
         elif outcome != "restart":
             break
 
