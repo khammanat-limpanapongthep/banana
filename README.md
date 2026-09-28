@@ -26,6 +26,3 @@ banana --seed 7   # same words every run, handy for racing a friend
 
 Correct letters go green, mistakes go red. `Tab` reshuffles the words if you
 don't like the ones you got, `Backspace` fixes the last character, `Esc` bails.
-
-When the timer runs out (or you finish the words) you get net WPM, raw WPM,
-accuracy, time, and a big banana for your trouble.
